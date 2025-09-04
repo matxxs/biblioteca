@@ -32,7 +32,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -52,6 +51,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { StatusMembrosBadge } from "@/components/badge-status";
 
 export default function MembrosComponent() {
   const [membros, setMembros] = useState<Membro[]>([]);
@@ -128,20 +128,6 @@ export default function MembrosComponent() {
       </div>
     );
   }
-
-  const getStatusVariant = (status: "Ativo" | "Inativo" | "Bloqueado") => {
-    switch (status) {
-      case "Ativo":
-        return "success";
-      case "Inativo":
-        return "secondary";
-      case "Bloqueado":
-        return "destructive";
-      default:
-        return "default";
-    }
-  };
-  
 
   return (
     <main className="grid grid-cols-1 gap-4 px-4 lg:gap-6 lg:px-6">
@@ -266,9 +252,7 @@ export default function MembrosComponent() {
                       {membro.telefone}
                     </TableCell>
                     <TableCell>
-                      <Badge variant={getStatusVariant(membro.statusMembro)}>
-                        {membro.statusMembro}
-                      </Badge>
+                      <StatusMembrosBadge status={membro.statusMembro} />
                     </TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>

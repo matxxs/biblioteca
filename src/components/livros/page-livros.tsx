@@ -30,10 +30,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Autor, Editora, Genero, Livro } from "@/types";
 import { livroService } from "@/services/api";
-import { LivroForm } from "./components/livro-form";
+import { LivroForm } from "./livro-form";
 import Modal from "../ui/modal"; 
 
-export default function DataTableLivros() {
+export default function PageLivros() {
   const [filteredLivros, setFilteredLivros] = useState<Livro[]>([]);
   const [livros, setLivros] = useState<Livro[]>([]);
   const [loading, setLoading] = useState(true);
