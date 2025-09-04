@@ -9,22 +9,13 @@ router.get('/', async (req, res) => {
     const result = await pool.request()
       .query(`
         SELECT 
-          l.LivroID,
-          l.Titulo,
-          l.EditoraID,
-          l.ISBN,
-          l.AnoPublicacao,
-          l.Edicao,
-          l.NumeroPaginas,
-          l.Sinopse,
-          e.Nome as EditoraNome,
-          e.Contato as EditoraContato
+          l.LivroID, l.Titulo, l.EditoraID, l.ISBN, l.AnoPublicacao, l.Edicao,
+          l.NumeroPaginas, l.Sinopse, e.Nome as EditoraNome, e.Contato as EditoraContato
         FROM Livros l
         INNER JOIN Editoras e ON l.EditoraID = e.EditoraID
         ORDER BY l.Titulo
       `);
 
-    // Buscar autores para cada livro
     const livros = await Promise.all(result.recordset.map(async (livro) => {
       const autoresResult = await pool.request()
         .input('livroID', sql.Int, livro.LivroID)
@@ -43,6 +34,18 @@ router.get('/', async (req, res) => {
           INNER JOIN Livro_Genero lg ON g.GeneroID = lg.GeneroID
           WHERE lg.LivroID = @livroID
         `);
+      
+      const autores = autoresResult.recordset.map(autor => ({
+        autorID: autor.AutorID,
+        nome: autor.Nome,
+        sobrenome: autor.Sobrenome,
+        nacionalidade: autor.Nacionalidade
+      }));
+
+      const generos = generosResult.recordset.map(genero => ({
+        generoID: genero.GeneroID,
+        nome: genero.Nome
+      }));
 
       return {
         livroID: livro.LivroID,
@@ -58,8 +61,8 @@ router.get('/', async (req, res) => {
           nome: livro.EditoraNome,
           contato: livro.EditoraContato
         },
-        autores: autoresResult.recordset,
-        generos: generosResult.recordset
+        autores: autores, 
+        generos: generos 
       };
     }));
 
@@ -70,24 +73,82 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET /api/livros/:id - Buscar livro por ID
-router.get('/:id', async (req, res) => {
+// GET /api/livros/editoras - Listar todas as editoras
+router.get('/editoras', async (req, res) => {
   try {
     const pool = getPool();
     const result = await pool.request()
-      .input('id', sql.Int, req.params.id)
+      .query('SELECT EditoraID, Nome, Contato FROM Editoras ORDER BY Nome');
+
+    const editoras = result.recordset.map(editora => ({
+      editoraID: editora.EditoraID,
+      nome: editora.Nome,
+      contato: editora.Contato
+    }));
+
+    res.json(editoras);
+  } catch (error) {
+    console.error('Erro ao buscar editoras:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+// GET /api/livros/autores - Listar todos os autores
+router.get('/autores', async (req, res) => {
+  try {
+    const pool = getPool();
+    const result = await pool.request()
+      .query('SELECT AutorID, Nome, Sobrenome, Nacionalidade FROM Autores ORDER BY Nome, Sobrenome');
+
+    const autores = result.recordset.map(autor => ({
+      autorID: autor.AutorID,
+      nome: autor.Nome,
+      sobrenome: autor.Sobrenome,
+      nacionalidade: autor.Nacionalidade
+    }));
+
+    res.json(autores);
+  } catch (error) {
+    console.error('Erro ao buscar autores:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+// GET /api/livros/generos - Listar todos os gêneros
+router.get('/generos', async (req, res) => {
+  try {
+    const pool = getPool();
+    const result = await pool.request()
+      .query('SELECT GeneroID, Nome FROM Generos ORDER BY Nome');
+
+    const generos = result.recordset.map(genero => ({
+      generoID: genero.GeneroID,
+      nome: genero.Nome
+    }));
+
+    res.json(generos);
+  } catch (error) {
+    console.error('Erro ao buscar gêneros:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+// GET /api/livros/:id - Buscar livro por ID
+router.get('/:id', async (req, res) => {
+  // MELHORIA: Validação do ID
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) {
+    return res.status(400).json({ error: 'O ID fornecido é inválido.' });
+  }
+
+  try {
+    const pool = getPool();
+    const result = await pool.request()
+      .input('id', sql.Int, id) // Usar o ID validado
       .query(`
         SELECT 
-          l.LivroID,
-          l.Titulo,
-          l.EditoraID,
-          l.ISBN,
-          l.AnoPublicacao,
-          l.Edicao,
-          l.NumeroPaginas,
-          l.Sinopse,
-          e.Nome as EditoraNome,
-          e.Contato as EditoraContato
+          l.LivroID, l.Titulo, l.EditoraID, l.ISBN, l.AnoPublicacao, l.Edicao,
+          l.NumeroPaginas, l.Sinopse, e.Nome as EditoraNome, e.Contato as EditoraContato
         FROM Livros l
         INNER JOIN Editoras e ON l.EditoraID = e.EditoraID
         WHERE l.LivroID = @id
@@ -99,7 +160,6 @@ router.get('/:id', async (req, res) => {
 
     const livro = result.recordset[0];
 
-    // Buscar autores e gêneros
     const [autoresResult, generosResult] = await Promise.all([
       pool.request()
         .input('livroID', sql.Int, livro.LivroID)
@@ -119,6 +179,19 @@ router.get('/:id', async (req, res) => {
         `)
     ]);
 
+    // AJUSTE: Mapear autores e gêneros para camelCase
+    const autores = autoresResult.recordset.map(autor => ({
+      autorID: autor.AutorID,
+      nome: autor.Nome,
+      sobrenome: autor.Sobrenome,
+      nacionalidade: autor.Nacionalidade
+    }));
+
+    const generos = generosResult.recordset.map(genero => ({
+        generoID: genero.GeneroID,
+        nome: genero.Nome
+    }));
+
     const livroCompleto = {
       livroID: livro.LivroID,
       titulo: livro.Titulo,
@@ -133,8 +206,8 @@ router.get('/:id', async (req, res) => {
         nome: livro.EditoraNome,
         contato: livro.EditoraContato
       },
-      autores: autoresResult.recordset,
-      generos: generosResult.recordset
+      autores: autores, // Usa o array mapeado
+      generos: generos  // Usa o array mapeado
     };
 
     res.json(livroCompleto);
@@ -153,7 +226,6 @@ router.post('/', async (req, res) => {
     
     const { titulo, editoraID, isbn, anoPublicacao, edicao, numeroPaginas, sinopse, autores, generos } = req.body;
 
-    // Inserir livro
     const livroResult = await transaction.request()
       .input('titulo', sql.NVarChar, titulo)
       .input('editoraID', sql.Int, editoraID)
@@ -170,29 +242,21 @@ router.post('/', async (req, res) => {
 
     const livroID = livroResult.recordset[0].LivroID;
 
-    // Inserir relações com autores
     if (autores && autores.length > 0) {
       for (const autor of autores) {
         await transaction.request()
           .input('livroID', sql.Int, livroID)
           .input('autorID', sql.Int, autor.autorID)
-          .query(`
-            INSERT INTO Livro_Autor (LivroID, AutorID)
-            VALUES (@livroID, @autorID)
-          `);
+          .query('INSERT INTO Livro_Autor (LivroID, AutorID) VALUES (@livroID, @autorID)');
       }
     }
 
-    // Inserir relações com gêneros
     if (generos && generos.length > 0) {
       for (const genero of generos) {
         await transaction.request()
           .input('livroID', sql.Int, livroID)
           .input('generoID', sql.Int, genero.generoID)
-          .query(`
-            INSERT INTO Livro_Genero (LivroID, GeneroID)
-            VALUES (@livroID, @generoID)
-          `);
+          .query('INSERT INTO Livro_Genero (LivroID, GeneroID) VALUES (@livroID, @generoID)');
       }
     }
 
@@ -207,15 +271,19 @@ router.post('/', async (req, res) => {
 
 // PUT /api/livros/:id - Atualizar livro
 router.put('/:id', async (req, res) => {
+  // MELHORIA: Validação do ID
+  const livroID = parseInt(req.params.id, 10);
+  if (isNaN(livroID)) {
+    return res.status(400).json({ error: 'O ID fornecido é inválido.' });
+  }
+
   const transaction = new sql.Transaction(getPool());
   
   try {
     await transaction.begin();
     
     const { titulo, editoraID, isbn, anoPublicacao, edicao, numeroPaginas, sinopse, autores, generos } = req.body;
-    const livroID = parseInt(req.params.id);
-
-    // Atualizar livro
+    
     await transaction.request()
       .input('livroID', sql.Int, livroID)
       .input('titulo', sql.NVarChar, titulo)
@@ -233,7 +301,6 @@ router.put('/:id', async (req, res) => {
         WHERE LivroID = @livroID
       `);
 
-    // Remover relações existentes
     await transaction.request()
       .input('livroID', sql.Int, livroID)
       .query('DELETE FROM Livro_Autor WHERE LivroID = @livroID');
@@ -242,29 +309,21 @@ router.put('/:id', async (req, res) => {
       .input('livroID', sql.Int, livroID)
       .query('DELETE FROM Livro_Genero WHERE LivroID = @livroID');
 
-    // Inserir novas relações com autores
     if (autores && autores.length > 0) {
       for (const autor of autores) {
         await transaction.request()
           .input('livroID', sql.Int, livroID)
           .input('autorID', sql.Int, autor.autorID)
-          .query(`
-            INSERT INTO Livro_Autor (LivroID, AutorID)
-            VALUES (@livroID, @autorID)
-          `);
+          .query('INSERT INTO Livro_Autor (LivroID, AutorID) VALUES (@livroID, @autorID)');
       }
     }
 
-    // Inserir novas relações com gêneros
     if (generos && generos.length > 0) {
       for (const genero of generos) {
         await transaction.request()
           .input('livroID', sql.Int, livroID)
           .input('generoID', sql.Int, genero.generoID)
-          .query(`
-            INSERT INTO Livro_Genero (LivroID, GeneroID)
-            VALUES (@livroID, @generoID)
-          `);
+          .query('INSERT INTO Livro_Genero (LivroID, GeneroID) VALUES (@livroID, @generoID)');
       }
     }
 
@@ -279,11 +338,21 @@ router.put('/:id', async (req, res) => {
 
 // DELETE /api/livros/:id - Excluir livro
 router.delete('/:id', async (req, res) => {
+  // MELHORIA: Validação do ID
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) {
+      return res.status(400).json({ error: 'O ID fornecido é inválido.' });
+  }
+
   try {
     const pool = getPool();
-    await pool.request()
-      .input('id', sql.Int, req.params.id)
+    const result = await pool.request()
+      .input('id', sql.Int, id) // Usar o ID validado
       .query('DELETE FROM Livros WHERE LivroID = @id');
+
+    if (result.rowsAffected[0] === 0) {
+        return res.status(404).json({ error: 'Livro não encontrado.' });
+    }
 
     res.json({ message: 'Livro excluído com sucesso' });
   } catch (error) {
@@ -292,5 +361,6 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-module.exports = router;
 
+
+module.exports = router;

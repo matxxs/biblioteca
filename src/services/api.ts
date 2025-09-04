@@ -35,6 +35,10 @@ export const livroService = {
   create: (livro: Omit<Livro, 'livroID'>) => api.post<Livro>('/livros', livro),
   update: (id: number, livro: Partial<Livro>) => api.put<Livro>(`/livros/${id}`, livro),
   delete: (id: number) => api.delete(`/livros/${id}`),
+
+  getEditoras: () => api.get<{ editoraID: number; nome: string; contato?: string }[]>('/livros/editoras'),
+  getAutores: () => api.get<{ autorID: number; nome: string; sobrenome: string; nacionalidade?: string }[]>('/livros/autores'),
+  getGeneros: () => api.get<{ generoID: number; nome: string }[]>('/livros/generos'),
 };
 
 // Serviços para Membros

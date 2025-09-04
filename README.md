@@ -1,214 +1,45 @@
-# Sistema de Gerenciamento de Biblioteca
+<h1 align="start">
+  Sistema de Biblioteca
+</h1>
 
-Uma aplicação completa de gerenciamento de biblioteca com frontend em React/TypeScript e backend em Node.js conectado ao SQL Server.
 
-## 🚀 Funcionalidades
+## Tecnologias utilizadas
 
-### Dashboard
-- Visão geral do sistema com estatísticas
-- Gráficos interativos dos relatórios
-- Livros mais emprestados
-- Top leitores
-- Livros em atraso
+- **[Next.js](https://nextjs.org/):** Framework React para SSR, rotas dinâmicas e otimização de desempenho.
+- **[TailwindCSS](https://tailwindcss.com/):** CSS utilitário para estilização rápida e responsiva.
+- **[Shadcn UI](https://ui.shadcn.dev/):** Conjunto de componentes acessíveis e personalizáveis.
 
-### Gerenciamento de Livros
-- CRUD completo de livros
-- Associação com autores e gêneros
-- Controle de exemplares
-- Busca por título, ISBN ou editora
+## Getting Started
 
-### Gerenciamento de Membros
-- CRUD completo de membros
-- Controle de status (Ativo, Inativo, Bloqueado)
-- Histórico de empréstimos
-
-### Gerenciamento de Empréstimos
-- Realização de empréstimos
-- Devolução de livros
-- Controle de atrasos
-- Cálculo automático de multas
-
-### Relatórios
-- Livros mais emprestados
-- Autores mais populares
-- Gêneros mais emprestados
-- Disponibilidade de livros
-- Multas pendentes e pagas
-- Top leitores
-- Livros em atraso
-
-## 🛠️ Tecnologias
-
-### Frontend
-- React 18
-- TypeScript
-- Tailwind CSS
-- Recharts (gráficos)
-- Lucide React (ícones)
-- Axios (HTTP client)
-
-### Backend
-- Node.js
-- Express.js
-- SQL Server (mssql)
-- CORS
-- Helmet (segurança)
-- Morgan (logs)
-
-## 📋 Pré-requisitos
-
-- Node.js 16+
-- SQL Server
-- Banco de dados `BibliotecaDB` criado
-
-## 🚀 Instalação e Execução
-
-### 1. Configurar o Banco de Dados
-
-Execute o script SQL fornecido para criar o banco de dados e as tabelas:
-
-```sql
--- Execute o script de criação do banco de dados
--- BibliotecaDB.sql
-```
-
-### 2. Configurar o Backend
+First, run the development server:
 
 ```bash
-cd server
-npm install
-```
-
-Crie um arquivo `.env` na pasta `server` com as configurações do banco:
-
-```env
-DB_SERVER=localhost
-DB_DATABASE=BibliotecaDB
-DB_USER=sa
-DB_PASSWORD=sua_senha_aqui
-DB_PORT=1433
-DB_ENCRYPT=true
-DB_TRUST_SERVER_CERTIFICATE=true
-PORT=3001
-NODE_ENV=development
-CORS_ORIGIN=http://localhost:3000
-```
-
-Inicie o servidor:
-
-```bash
-npm start
-# ou para desenvolvimento
 npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-### 3. Configurar o Frontend
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-```bash
-npm install
-```
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-Inicie a aplicação:
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-```bash
-npm start
-```
+## Learn More
 
-A aplicação estará disponível em `http://localhost:3000`
+To learn more about Next.js, take a look at the following resources:
 
-## 📊 Estrutura do Banco de Dados
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-### Tabelas Principais
-- **Livros**: Informações dos livros
-- **Autores**: Dados dos autores
-- **Editoras**: Informações das editoras
-- **Gêneros**: Categorias literárias
-- **Exemplares**: Cópias físicas dos livros
-- **Membros**: Usuários da biblioteca
-- **Empréstimos**: Registro de empréstimos
-- **Multas**: Controle de multas por atraso
-- **Reservas**: Sistema de reservas
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-### Relacionamentos
-- Livros ↔ Autores (N:N)
-- Livros ↔ Gêneros (N:N)
-- Livros → Exemplares (1:N)
-- Exemplares → Empréstimos (1:N)
-- Membros → Empréstimos (1:N)
-- Empréstimos → Multas (1:N)
+## Deploy on Vercel
 
-## 🔧 API Endpoints
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-### Livros
-- `GET /api/livros` - Listar livros
-- `GET /api/livros/:id` - Buscar livro
-- `POST /api/livros` - Criar livro
-- `PUT /api/livros/:id` - Atualizar livro
-- `DELETE /api/livros/:id` - Excluir livro
-
-### Membros
-- `GET /api/membros` - Listar membros
-- `GET /api/membros/:id` - Buscar membro
-- `POST /api/membros` - Criar membro
-- `PUT /api/membros/:id` - Atualizar membro
-- `DELETE /api/membros/:id` - Excluir membro
-
-### Empréstimos
-- `GET /api/emprestimos` - Listar empréstimos
-- `POST /api/emprestimos` - Realizar empréstimo
-- `POST /api/emprestimos/:id/devolver` - Devolver livro
-
-### Relatórios
-- `GET /api/relatorios/livros-mais-emprestados`
-- `GET /api/relatorios/livros-atraso`
-- `GET /api/relatorios/disponibilidade`
-- `GET /api/relatorios/autores-populares`
-- `GET /api/relatorios/generos-populares`
-- `GET /api/relatorios/multas-pendentes`
-- `GET /api/relatorios/top-leitores`
-- `GET /api/relatorios/total-multas`
-
-## 📱 Interface
-
-A interface é responsiva e moderna, com:
-- Dashboard com gráficos interativos
-- Tabelas com busca e filtros
-- Modais para formulários
-- Design system consistente
-- Navegação intuitiva
-
-## 🔒 Segurança
-
-- Validação de dados no backend
-- Sanitização de inputs
-- Headers de segurança (Helmet)
-- CORS configurado
-- Transações de banco de dados
-
-## 📈 Relatórios Disponíveis
-
-1. **Livros Mais Emprestados**: Ranking dos livros mais populares
-2. **Livros em Atraso**: Controle de devoluções atrasadas
-3. **Disponibilidade**: Status dos exemplares
-4. **Autores Populares**: Ranking por empréstimos
-5. **Gêneros Populares**: Preferências dos leitores
-6. **Multas**: Controle financeiro
-7. **Top Leitores**: Membros mais ativos
-8. **Histórico**: Empréstimos por membro
-
-## 🤝 Contribuição
-
-1. Fork o projeto
-2. Crie uma branch para sua feature
-3. Commit suas mudanças
-4. Push para a branch
-5. Abra um Pull Request
-
-## 📄 Licença
-
-Este projeto está sob a licença MIT.
-
-## 📞 Suporte
-
-Para dúvidas ou suporte, entre em contato através dos issues do GitHub.
-
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
