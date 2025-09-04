@@ -10,10 +10,19 @@ router.get('/', async (req, res) => {
       .query(`
         SELECT 
           l.LivroID, l.Titulo, l.EditoraID, l.ISBN, l.AnoPublicacao, l.Edicao,
-          l.NumeroPaginas, l.Sinopse, e.Nome as EditoraNome, e.Contato as EditoraContato
+          l.NumeroPaginas, l.Sinopse, e.Nome AS EditoraNome, e.Contato AS EditoraContato,
+          SUM(CASE WHEN ex.StatusExemplar = 'Disponível' THEN 1 ELSE 0 END) AS QtdDisponivel,
+          SUM(CASE WHEN ex.StatusExemplar <> 'Disponível' THEN 1 ELSE 0 END) AS QtdIndisponivel,
+          COUNT(ex.ExemplarID) AS QtdTotal
+
         FROM Livros l
         INNER JOIN Editoras e ON l.EditoraID = e.EditoraID
-        ORDER BY l.Titulo
+        LEFT JOIN Exemplares ex ON l.LivroID = ex.LivroID
+
+        GROUP BY l.LivroID, l.Titulo, l.EditoraID, l.ISBN, l.AnoPublicacao, l.Edicao,
+          l.NumeroPaginas, l.Sinopse, e.Nome, e.Contato
+
+        ORDER BY l.Titulo;
       `);
 
     const livros = await Promise.all(result.recordset.map(async (livro) => {
@@ -56,6 +65,10 @@ router.get('/', async (req, res) => {
         edicao: livro.Edicao,
         numeroPaginas: livro.NumeroPaginas,
         sinopse: livro.Sinopse,
+        contagem: {
+          disponiveis: livro.QtdDisponivel,
+          total: livro.QtdTotal
+        },
         editora: {
           editoraID: livro.EditoraID,
           nome: livro.EditoraNome,
@@ -179,7 +192,6 @@ router.get('/:id', async (req, res) => {
         `)
     ]);
 
-    // AJUSTE: Mapear autores e gêneros para camelCase
     const autores = autoresResult.recordset.map(autor => ({
       autorID: autor.AutorID,
       nome: autor.Nome,
@@ -206,8 +218,8 @@ router.get('/:id', async (req, res) => {
         nome: livro.EditoraNome,
         contato: livro.EditoraContato
       },
-      autores: autores, // Usa o array mapeado
-      generos: generos  // Usa o array mapeado
+      autores: autores,
+      generos: generos
     };
 
     res.json(livroCompleto);

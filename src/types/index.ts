@@ -27,6 +27,7 @@ export interface Livro {
   edicao?: string;
   numeroPaginas?: number;
   sinopse?: string;
+  contagem?: Contagem;
   editora?: Editora;
   autores?: Autor[];
   generos?: Genero[];
@@ -145,3 +146,9 @@ export interface RelatorioTotalMultas {
   quantidadeMultas: number;
 }
 
+// 
+
+export interface Contagem{
+  disponiveis: number,
+  total: number
+}

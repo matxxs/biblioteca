@@ -46,7 +46,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, size = 
         >
             {/* Background overlay com opacidade ajustada */}
             <div
-                className="fixed inset-0 bg-[rgba(0,0,0,0.5)] transition-opacity" // <-- LINHA ALTERADA
+                className="fixed inset-0 bg-[rgba(0,0,0,0.5)] transition-opacity"
                 aria-hidden="true"
                 onClick={onClose}
             />

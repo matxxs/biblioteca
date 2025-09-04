@@ -2,7 +2,7 @@ const express = require('express');
 const { getPool, sql } = require('../config/database');
 const router = express.Router();
 
-// GET /api/exemplares - Listar todos os exemplares
+// GET /api/exemplares - Listar todos os exemplares (sem alterações)
 router.get('/', async (req, res) => {
   try {
     const pool = getPool();
@@ -43,7 +43,31 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET /api/exemplares/:id - Buscar exemplar por ID
+router.get('/livro/:id', async (req, res) => {
+  try {
+    const pool = getPool();
+    const result = await pool.request()
+      .input('id', sql.Int, req.params.id)
+      .query(`
+        SELECT 
+          ex.ExemplarID as exemplarID,
+          ex.CodigoLocalizacao as codigoLocalizacao,
+          ex.StatusExemplar as statusExemplar
+        FROM Exemplares ex
+        WHERE ex.LivroID = @id
+        ORDER BY ex.ExemplarID
+      `);
+
+    res.json(result.recordset);
+
+  } catch (error) {
+    console.error('Erro ao buscar exemplares do livro:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+
+// GET /api/exemplares/:id - Buscar um exemplar específico por ID
 router.get('/:id', async (req, res) => {
   try {
     const pool = getPool();
@@ -67,29 +91,55 @@ router.get('/:id', async (req, res) => {
     if (result.recordset.length === 0) {
       return res.status(404).json({ error: 'Exemplar não encontrado' });
     }
-
+    
     const row = result.recordset[0];
     const exemplar = {
-      exemplarID: row.exemplarID,
-      livroID: row.livroID,
-      codigoLocalizacao: row.codigoLocalizacao,
-      statusExemplar: row.statusExemplar,
-      livro: {
+        exemplarID: row.exemplarID,
         livroID: row.livroID,
-        titulo: row.livroTitulo,
-        isbn: row.livroISBN,
-        editora: {
-          nome: row.editoraNome
+        codigoLocalizacao: row.codigoLocalizacao,
+        statusExemplar: row.statusExemplar,
+        livro: {
+            livroID: row.livroID,
+            titulo: row.livroTitulo,
+            isbn: row.livroISBN,
+            editora: {
+                nome: row.editoraNome
+            }
         }
-      }
     };
-
     res.json(exemplar);
+
   } catch (error) {
     console.error('Erro ao buscar exemplar:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
+
+// PATCH /api/exemplares/:id/status - Atualizar apenas o status de um exemplar
+router.patch('/:id/status', async (req, res) => {
+    try {
+        const { statusExemplar } = req.body;
+        if (!statusExemplar) {
+            return res.status(400).json({ error: 'O novo status é obrigatório.' });
+        }
+
+        const pool = getPool();
+        await pool.request()
+            .input('id', sql.Int, req.params.id)
+            .input('statusExemplar', sql.NVarChar, statusExemplar)
+            .query(`
+                UPDATE Exemplares 
+                SET StatusExemplar = @statusExemplar
+                WHERE ExemplarID = @id
+            `);
+
+        res.json({ message: 'Status do exemplar atualizado com sucesso' });
+    } catch (error) {
+        console.error('Erro ao atualizar status do exemplar:', error);
+        res.status(500).json({ error: 'Erro interno do servidor' });
+    }
+});
+
 
 // POST /api/exemplares - Criar novo exemplar
 router.post('/', async (req, res) => {
@@ -115,7 +165,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-// PUT /api/exemplares/:id - Atualizar exemplar
+// PUT /api/exemplares/:id - Atualizar exemplar completo
 router.put('/:id', async (req, res) => {
   try {
     const pool = getPool();
@@ -155,4 +205,3 @@ router.delete('/:id', async (req, res) => {
 });
 
 module.exports = router;
-

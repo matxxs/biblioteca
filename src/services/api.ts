@@ -65,6 +65,9 @@ export const emprestimoService = {
 export const exemplarService = {
   getAll: () => api.get<Exemplar[]>('/exemplares'),
   getById: (id: number) => api.get<Exemplar>(`/exemplares/${id}`),
+  getByLivroId: (id: number) => api.get<Exemplar>(`/exemplares/livro/${id}`),
+  patchUpdateStatus: (id: number, status: string) =>
+    api.patch(`/exemplares/${id}/status`, { statusExemplar: status }),
   create: (exemplar: Omit<Exemplar, 'exemplarID'>) => api.post<Exemplar>('/exemplares', exemplar),
   update: (id: number, exemplar: Partial<Exemplar>) => api.put<Exemplar>(`/exemplares/${id}`, exemplar),
   delete: (id: number) => api.delete(`/exemplares/${id}`),

@@ -31,7 +31,7 @@ import {
 import { Autor, Editora, Genero, Livro } from "@/types";
 import { livroService } from "@/services/api";
 import { LivroForm } from "./livro-form";
-import Modal from "../ui/modal"; 
+import Modal from "../ui/modal";
 
 export default function PageLivros() {
   const [filteredLivros, setFilteredLivros] = useState<Livro[]>([]);
@@ -69,7 +69,6 @@ export default function PageLivros() {
       setLivros(response.data);
     } catch (error) {
       console.error("Erro ao carregar livros:", error);
-      // Em caso de erro, a tabela mostrará "Nenhum livro encontrado".
       setLivros([]);
     } finally {
       setLoading(false);
@@ -119,7 +118,7 @@ export default function PageLivros() {
       } else {
         await livroService.create(livroData);
       }
-      handleCloseModal(); // Fechar e resetar o modal após salvar
+      handleCloseModal(); 
       await loadLivros();
     } catch (error) {
       console.error("Erro ao salvar livro:", error);
@@ -127,36 +126,35 @@ export default function PageLivros() {
     }
   };
 
-  
-    const fetchEditoras = async () => {
-      try {
-        const response = await livroService.getEditoras();
-        setEditoras(response.data);
-      } catch (error) {
-        console.error('Erro ao buscar editoras:', error);
-        setEditoras([]);
-      }
-    };
-  
-    const fetchAutores = async () => {
-      try {
-        const response = await livroService.getAutores();
-        setAutores(response.data);
-      } catch (error) {
-        console.error('Erro ao buscar autores:', error);
-        setAutores([]);
-      }
-    };
-  
-    const fetchGeneros = async () => {
-      try {
-        const response = await livroService.getGeneros();
-        setGeneros(response.data);
-      } catch (error) {
-        console.error('Erro ao buscar gêneros:', error);
-        setGeneros([]);
-      }
-    };
+  const fetchEditoras = async () => {
+    try {
+      const response = await livroService.getEditoras();
+      setEditoras(response.data);
+    } catch (error) {
+      console.error('Erro ao buscar editoras:', error);
+      setEditoras([]);
+    }
+  };
+
+  const fetchAutores = async () => {
+    try {
+      const response = await livroService.getAutores();
+      setAutores(response.data);
+    } catch (error) {
+      console.error('Erro ao buscar autores:', error);
+      setAutores([]);
+    }
+  };
+
+  const fetchGeneros = async () => {
+    try {
+      const response = await livroService.getGeneros();
+      setGeneros(response.data);
+    } catch (error) {
+      console.error('Erro ao buscar gêneros:', error);
+      setGeneros([]);
+    }
+  };
 
   if (loading) {
     return (
@@ -211,9 +209,11 @@ export default function PageLivros() {
                   filteredLivros.map((livro) => (
                     <TableRow key={livro.livroID}>
                       <TableCell>
-                        <div className="font-medium">{livro.titulo}</div>
+                        <div >
+                          <span className="font-medium"> {livro.titulo}</span> 
+                          <span className="text-sm text-muted-foreground"> - disponíveis: {livro.contagem?.disponiveis} de {livro.contagem?.total}</span> </div>
                         <div className="text-sm text-muted-foreground">
-                          {livro.edicao}
+                          {livro.edicao} 
                         </div>
                       </TableCell>
                       <TableCell className="hidden md:table-cell font-mono text-sm">
@@ -272,9 +272,10 @@ export default function PageLivros() {
               viewingLivro
                 ? "Detalhes do Livro"
                 : editingLivro
-                ? "Editar Livro"
-                : "Novo Livro"
+                  ? "Editar Livro"
+                  : "Novo Livro"
             }
+            // size={"xl"}
           >
             {viewingLivro ? (
               <div className="space-y-4 text-sm">
@@ -294,7 +295,7 @@ export default function PageLivros() {
                     {viewingLivro.editora?.nome}
                   </p>
                 </div>
-                 <div>
+                <div>
                   <label className="font-semibold text-gray-700">Autores</label>
                   <p className="mt-1 text-gray-900">
                     {viewingLivro.autores

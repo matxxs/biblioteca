@@ -164,12 +164,12 @@ router.post('/', async (req, res) => {
         VALUES (@exemplarID, @membroID, @dataDevolucaoPrevista)
       `);
 
-    const emprestimoID = emprestimoResult.recordset[0].EmprestimoID;
+     const emprestimoID = emprestimoResult.recordset[0].EmprestimoID;
 
-    // Atualizar status do exemplar
-    await transaction.request()
-      .input('exemplarID', sql.Int, exemplarID)
-      .query('UPDATE Exemplares SET StatusExemplar = \'Emprestado\' WHERE ExemplarID = @exemplarID');
+    // Atualizar status do exemplar - via trigger
+    // await transaction.request()
+    //   .input('exemplarID', sql.Int, exemplarID)
+    //   .query('UPDATE Exemplares SET StatusExemplar = \'Emprestado\' WHERE ExemplarID = @exemplarID');
 
     await transaction.commit();
     res.status(201).json({ emprestimoID, message: 'Empréstimo realizado com sucesso' });
