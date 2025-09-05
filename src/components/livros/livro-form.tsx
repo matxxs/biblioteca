@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { exemplarService } from "@/services/api";
 import { MoreHorizontal, PlusCircle } from "lucide-react";
+import { toast } from "sonner";
 
 interface LivroFormProps {
   livro?: Livro | null;
@@ -124,11 +125,11 @@ export function LivroForm({
   const handleStatusChange = async (exemplarID: number, novoStatus: string) => {
     try {
       await exemplarService.patchUpdateStatus(exemplarID, novoStatus);
-      alert("Status do exemplar atualizado com sucesso!");
+      toast.success("Status do exemplar atualizado com sucesso!");
       fetchExemplares();
     } catch (error) {
       console.error("Erro ao atualizar status do exemplar:", error);
-      alert("Falha ao atualizar o status.");
+      toast.error("Falha ao atualizar o status.");
     }
   };
 
@@ -143,13 +144,13 @@ export function LivroForm({
         codigoLocalizacao: novoCodigoLocalizacao,
         statusExemplar: "Disponível",
       });
-      alert("Exemplar adicionado com sucesso!");
+      toast.success("Exemplar adicionado com sucesso!");
       setNovoCodigoLocalizacao("");
       setIsAddingExemplar(false);
       await fetchExemplares();
     } catch (error) {
       console.error("Erro ao criar exemplar:", error);
-      alert("Falha ao adicionar exemplar.");
+      toast.error("Falha ao criar exemplar.");
     }
   };
 

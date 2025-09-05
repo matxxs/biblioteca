@@ -154,3 +154,13 @@ export interface Contagem {
   disponiveis: number,
   total: number
 }
+
+
+// ========= TYPES PARA A SIDEBAR ========= //
+export type NavItem = {
+  url: string;
+  name?: string;
+  title?: string;
+  icon?: React.ElementType;
+  subItems?: Omit<NavItem, "icon" | "subItems">[];
+}

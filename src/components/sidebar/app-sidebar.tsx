@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { NavMain } from "@/components/sidebar/nav-main";
 import {
   Sidebar,
   SidebarContent,
@@ -11,8 +10,8 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
-import { data } from "@/lib/data-nav";
 import { Book } from "lucide-react";
+import { DynamicNav } from "./nav-dinamic";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -35,7 +34,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <DynamicNav />
       </SidebarContent>
     </Sidebar>
   );
