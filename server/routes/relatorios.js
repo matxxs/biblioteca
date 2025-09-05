@@ -202,10 +202,13 @@ router.get('/historico-membro/:id', async (req, res) => {
             WHEN E.DataDevolucaoReal IS NULL AND E.DataDevolucaoPrevista < GETDATE() THEN 'Em Atraso'
             WHEN E.DataDevolucaoReal IS NULL THEN 'Emprestado'
             ELSE 'Devolvido'
-          END AS status
+          END AS status,
+          M.Valor AS valorMulta,
+          M.DataPagamento AS dataPagamento
         FROM Emprestimos AS E
         JOIN Exemplares AS EX ON E.ExemplarID = EX.ExemplarID
         JOIN Livros AS L ON EX.LivroID = L.LivroID
+        LEFT JOIN Multas AS M ON M.EmprestimoID = E.EmprestimoID
         WHERE E.MembroID = @membroID
         ORDER BY E.DataEmprestimo DESC
       `);
@@ -216,6 +219,7 @@ router.get('/historico-membro/:id', async (req, res) => {
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
+
 
 // GET /api/relatorios/total-multas
 router.get('/total-multas', async (req, res) => {

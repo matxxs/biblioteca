@@ -138,6 +138,8 @@ export interface RelatorioHistoricoMembro {
   dataDevolucaoPrevista: string;
   dataDevolucaoReal?: string;
   status: string;
+  valorMulta: number;
+  dataPagamento: Date;
 }
 
 export interface RelatorioTotalMultas {
@@ -148,7 +150,7 @@ export interface RelatorioTotalMultas {
 
 // 
 
-export interface Contagem{
+export interface Contagem {
   disponiveis: number,
   total: number
 }

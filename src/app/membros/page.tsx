@@ -1,4 +1,4 @@
-import MembrosComponent from "@/components/membros/membros-component";
+import MembrosComponent from "@/components/membros/page-membros";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

@@ -46,7 +46,6 @@ export function LivroForm({
   const [isLoadingExemplares, setIsLoadingExemplares] = useState(false);
   const [isAddingExemplar, setIsAddingExemplar] = useState(false);
   const [novoCodigoLocalizacao, setNovoCodigoLocalizacao] = useState("");
-  const [activeTab, setActiveTab] = useState<'detalhes' | 'exemplares'>('detalhes');
 
   const fetchExemplares = useCallback(async () => {
     if (!livro?.livroID) {
@@ -68,7 +67,6 @@ export function LivroForm({
 
   useEffect(() => {
     if (livro) {
-      setActiveTab('detalhes'); // Sempre volta para a aba de detalhes ao abrir
       setFormData({
         titulo: livro.titulo,
         editoraID: livro.editoraID.toString(),
@@ -155,182 +153,181 @@ export function LivroForm({
     }
   };
 
+  const isGrid = !livro?.livroID ? "lg:grid-cols-1" : "lg:grid-cols-2"
+
   return (
     <form onSubmit={handleSubmit} className="flex flex-col h-full max-h-[85vh]">
-      {livro && (
-        <div className="flex-shrink-0 border-b mb-4">
-          <div className="flex space-x-2">
-            <Button
-              type="button"
-              variant={activeTab === 'detalhes' ? 'secondary' : 'ghost'}
-              onClick={() => setActiveTab('detalhes')}
-              className="rounded-b-none"
-            >
-              Detalhes
-            </Button>
-            <Button
-              type="button"
-              variant={activeTab === 'exemplares' ? 'secondary' : 'ghost'}
-              onClick={() => setActiveTab('exemplares')}
-              className="rounded-b-none"
-            >
-              Exemplares
-            </Button>
-          </div>
-        </div>
-      )}
-
       <div className="flex-grow overflow-y-auto pr-4">
-        {/* Seção de Detalhes do Livro (condicional) */}
-        <div className={`${activeTab === 'detalhes' || !livro ? 'block' : 'hidden'} space-y-6`}>
-          <div className="space-y-2">
-            <Label htmlFor="titulo">Título</Label>
-            <Input id="titulo" value={formData.titulo} onChange={(e) => setFormData({ ...formData, titulo: e.target.value })} required />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="edicao">Edição</Label>
-            <Input id="edicao" value={formData.edicao} onChange={(e) => setFormData({ ...formData, edicao: e.target.value })} placeholder="Ex: 1ª, 2ª..." />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className={`grid grid-cols-1 ${isGrid} gap-8`}>
+          {/* Coluna 1: Detalhes do Livro */}
+          <div className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="isbn">ISBN</Label>
-              <Input id="isbn" value={formData.isbn} onChange={(e) => setFormData({ ...formData, isbn: e.target.value })} required placeholder="Ex: 978-3-16-148410-0" />
+              <Label htmlFor="titulo">Título</Label>
+              <Input id="titulo" value={formData.titulo} onChange={(e) => setFormData({ ...formData, titulo: e.target.value })} required />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="anoPublicacao">Ano</Label>
-              <Input id="anoPublicacao" type="number" value={formData.anoPublicacao} onChange={(e) => setFormData({ ...formData, anoPublicacao: e.target.value })} placeholder="Ex: 2023" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="numeroPaginas">Páginas</Label>
-              <Input id="numeroPaginas" type="number" value={formData.numeroPaginas} onChange={(e) => setFormData({ ...formData, numeroPaginas: e.target.value })} placeholder="Ex: 350" />
-            </div>
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="editora">Editora</Label>
-            <Select key={formData.editoraID} value={formData.editoraID} onValueChange={(value) => setFormData({ ...formData, editoraID: value })}>
-              <SelectTrigger id="editora" className="w-full">
-                <SelectValue placeholder="Selecione uma editora" />
-              </SelectTrigger>
-              <SelectContent>
-                {allEditoras.map((editora) => (
-                  <SelectItem key={editora.editoraID} value={editora.editoraID.toString()}>
-                    {editora.nome}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label>Autores</Label>
-              <div className="border rounded-md p-3 max-h-40 overflow-y-auto space-y-2">
-                {autores.map((autor) => (
-                  <div key={autor.autorID} className="flex items-center space-x-2">
-                    <Checkbox id={`autor-${autor.autorID}`} checked={formData.autores.includes(autor.autorID.toString())} onCheckedChange={(checked) => handleCheckboxChange(autor.autorID.toString(), checked, "autores")} />
-                    <Label htmlFor={`autor-${autor.autorID}`} className="font-normal cursor-pointer">{autor.nome} {autor.sobrenome}</Label>
-                  </div>
-                ))}
+              <Label htmlFor="edicao">Edição</Label>
+              <Input id="edicao" value={formData.edicao} onChange={(e) => setFormData({ ...formData, edicao: e.target.value })} placeholder="Ex: 1ª, 2ª..." />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="isbn">ISBN</Label>
+                <Input id="isbn" value={formData.isbn} onChange={(e) => setFormData({ ...formData, isbn: e.target.value })} required placeholder="Ex: 978-3-16-148410-0" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="anoPublicacao">Ano</Label>
+                <Input id="anoPublicacao" type="number" value={formData.anoPublicacao} onChange={(e) => setFormData({ ...formData, anoPublicacao: e.target.value })} placeholder="Ex: 2023" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="numeroPaginas">Páginas</Label>
+                <Input id="numeroPaginas" type="number" value={formData.numeroPaginas} onChange={(e) => setFormData({ ...formData, numeroPaginas: e.target.value })} placeholder="Ex: 350" />
               </div>
             </div>
+
             <div className="space-y-2">
-              <Label>Gêneros</Label>
-              <div className="border rounded-md p-3 max-h-40 overflow-y-auto space-y-2">
-                {generos.map((genero) => (
-                  <div key={genero.generoID} className="flex items-center space-x-2">
-                    <Checkbox id={`genero-${genero.generoID}`} checked={formData.generos.includes(genero.generoID.toString())} onCheckedChange={(checked) => handleCheckboxChange(genero.generoID.toString(), checked, "generos")} />
-                    <Label htmlFor={`genero-${genero.generoID}`} className="font-normal cursor-pointer">{genero.nome}</Label>
-                  </div>
-                ))}
-              </div>
+              <Label htmlFor="editora">Editora</Label>
+              <Select key={formData.editoraID} value={formData.editoraID} onValueChange={(value) => setFormData({ ...formData, editoraID: value })}>
+                <SelectTrigger id="editora" className="w-full">
+                  <SelectValue placeholder="Selecione uma editora" />
+                </SelectTrigger>
+                <SelectContent>
+                  {allEditoras.map((editora) => (
+                    <SelectItem key={editora.editoraID} value={editora.editoraID.toString()}>
+                      {editora.nome}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="sinopse">Sinopse</Label>
-            <Textarea id="sinopse" value={formData.sinopse} onChange={(e) => setFormData({ ...formData, sinopse: e.target.value })} placeholder="Escreva a sinopse do livro aqui..." rows={4} />
-          </div>
-        </div>
-
-        {/* Seção de Exemplares (condicional) */}
-        {livro && (
-          <div className={`${activeTab === 'exemplares' ? 'block' : 'hidden'} space-y-4`}>
-            <div className="flex flex-row items-center justify-end">
-              <Button size="sm" variant="outline" type="button" onClick={() => setIsAddingExemplar(true)} disabled={isAddingExemplar}>
-                <PlusCircle className="h-4 w-4 mr-2" />
-                Adicionar Exemplar
-              </Button>
-            </div>
-            
-            <div>
-              {isAddingExemplar && (
-                <div className="flex items-center gap-2 p-4 border rounded-lg mb-4 bg-slate-50">
-                  <Input placeholder="Código de Localização (ex: P3-E2-L1)" value={novoCodigoLocalizacao} onChange={(e) => setNovoCodigoLocalizacao(e.target.value)} className="flex-grow" />
-                  <Button size="sm" type="button" onClick={handleSaveNewExemplar}>Salvar Exemplar</Button>
-                  <Button size="sm" type="button" variant="ghost" onClick={() => setIsAddingExemplar(false)}>Cancelar</Button>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label>Autores</Label>
+                <div className="border rounded-md p-3 max-h-40 overflow-y-auto space-y-2">
+                  {autores.map((autor) => (
+                    <div key={autor.autorID} className="flex items-center space-x-2">
+                      <Checkbox id={`autor-${autor.autorID}`} checked={formData.autores.includes(autor.autorID.toString())} onCheckedChange={(checked) => handleCheckboxChange(autor.autorID.toString(), checked, "autores")} />
+                      <Label htmlFor={`autor-${autor.autorID}`} className="font-normal cursor-pointer">{autor.nome} {autor.sobrenome}</Label>
+                    </div>
+                  ))}
                 </div>
-              )}
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>ID</TableHead>
-                    <TableHead>Localização</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Ações</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {isLoadingExemplares ? (
-                    <TableRow><TableCell colSpan={4} className="h-24 text-center">A carregar exemplares...</TableCell></TableRow>
-                  ) : exemplares.length > 0 ? (
-                    exemplares.map((exemplar) => (
-                      <TableRow key={exemplar.exemplarID}>
-                        <TableCell className="font-medium">{exemplar.exemplarID}</TableCell>
-                        <TableCell>{exemplar.codigoLocalizacao}</TableCell>
-                        <TableCell>{exemplar.statusExemplar}</TableCell>
-                        <TableCell className="text-right">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button aria-haspopup="true" size="icon" variant="ghost">
-                                <MoreHorizontal className="h-4 w-4" />
-                                <span className="sr-only">Toggle menu</span>
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuLabel>Alterar Estado</DropdownMenuLabel>
-                              <DropdownMenuItem onClick={() => handleStatusChange(exemplar.exemplarID, 'Disponivel')}>Disponível</DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => handleStatusChange(exemplar.exemplarID, 'Emprestado')}>Emprestado</DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => handleStatusChange(exemplar.exemplarID, 'Manutencao')}>Manutenção</DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem className="text-red-600" onClick={() => handleStatusChange(exemplar.exemplarID, 'Perdido')}>Perdido</DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow><TableCell colSpan={4} className="h-24 text-center">Nenhum exemplar registado para este livro.</TableCell></TableRow>
-                  )}
-                </TableBody>
-              </Table>
+              </div>
+              <div className="space-y-2">
+                <Label>Gêneros</Label>
+                <div className="border rounded-md p-3 max-h-40 overflow-y-auto space-y-2">
+                  {generos.map((genero) => (
+                    <div key={genero.generoID} className="flex items-center space-x-2">
+                      <Checkbox id={`genero-${genero.generoID}`} checked={formData.generos.includes(genero.generoID.toString())} onCheckedChange={(checked) => handleCheckboxChange(genero.generoID.toString(), checked, "generos")} />
+                      <Label htmlFor={`genero-${genero.generoID}`} className="font-normal cursor-pointer">{genero.nome}</Label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="sinopse">Sinopse</Label>
+              <Textarea id="sinopse" value={formData.sinopse} onChange={(e) => setFormData({ ...formData, sinopse: e.target.value })} placeholder="Escreva a sinopse do livro aqui..." rows={4} />
             </div>
           </div>
-        )}
+
+          {/* Coluna 2: Exemplares (só aparece no modo de edição) */}
+          {livro && (
+            <div className="space-y-4">
+              <div className="flex flex-row items-center justify-between">
+                <h3 className="text-lg font-medium">Exemplares</h3>
+                <Button size="sm" variant="outline" type="button" onClick={() => setIsAddingExemplar(true)} disabled={isAddingExemplar}>
+                  <PlusCircle className="h-4 w-4 mr-2" />
+                  Adicionar
+                </Button>
+              </div>
+
+              <div>
+                {isAddingExemplar && (
+                  <div className="flex items-center gap-2 p-4 border rounded-lg mb-4 bg-slate-50">
+                    <Input placeholder="Código de Localização (ex: P3-E2-L1)" value={novoCodigoLocalizacao} onChange={(e) => setNovoCodigoLocalizacao(e.target.value)} className="flex-grow" />
+                    <Button size="sm" type="button" onClick={handleSaveNewExemplar}>Salvar</Button>
+                    <Button size="sm" type="button" variant="ghost" onClick={() => setIsAddingExemplar(false)}>Cancelar</Button>
+                  </div>
+                )}
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>ID</TableHead>
+                      <TableHead>Localização</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="text-right">Ações</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {isLoadingExemplares ? (
+                      <TableRow><TableCell colSpan={4} className="h-24 text-center">A carregar exemplares...</TableCell></TableRow>
+                    ) : exemplares.length > 0 ? (
+                      exemplares.map((exemplar) => (
+                        <TableRow key={exemplar.exemplarID}>
+                          <TableCell className="font-medium">{exemplar.exemplarID}</TableCell>
+                          <TableCell>{exemplar.codigoLocalizacao}</TableCell>
+                          <TableCell>{exemplar.statusExemplar}</TableCell>
+                          <TableCell className="text-right">
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button aria-haspopup="true" size="icon" variant="ghost">
+                                  <MoreHorizontal className="h-4 w-4" />
+                                  <span className="sr-only">Toggle menu</span>
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuLabel>Alterar Estado</DropdownMenuLabel>
+
+                                {exemplar.statusExemplar === 'Disponível' && (
+                                  <DropdownMenuItem onClick={() => handleStatusChange(exemplar.exemplarID, 'Manutenção')}>
+                                    Mover para Manutenção
+                                  </DropdownMenuItem>
+                                )}
+
+                                {exemplar.statusExemplar === 'Emprestado' && (
+                                  <DropdownMenuItem
+                                    className="text-red-600 focus:text-red-700"
+                                    onClick={() => handleStatusChange(exemplar.exemplarID, 'Perdido')}
+                                  >
+                                    Marcar como Perdido
+                                  </DropdownMenuItem>
+                                )}
+
+                                {exemplar.statusExemplar === 'Manutenção' && (
+                                  <DropdownMenuItem onClick={() => handleStatusChange(exemplar.exemplarID, 'Disponível')}>
+                                    Marcar como Disponível
+                                  </DropdownMenuItem>
+                                )}
+
+                                {exemplar.statusExemplar === 'Perdido' && (
+                                  <DropdownMenuItem disabled>Nenhuma ação disponível</DropdownMenuItem>
+                                )}
+
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow><TableCell colSpan={4} className="h-24 text-center">Nenhum exemplar registado para este livro.</TableCell></TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="flex-shrink-0 flex justify-end space-x-2 pt-4 border-t mt-4">
         <Button type="button" variant="outline" onClick={onCancel}>
           Cancelar
         </Button>
-        {/* O botão de salvar só aparece na aba de detalhes ou se for um livro novo */}
-        {(activeTab === 'detalhes' || !livro) && (
-          <Button type="submit">Salvar Livro</Button>
-        )}
+        <Button type="submit">{livro ? 'Atualizar' : 'Criar'}</Button>
       </div>
     </form>
   );
 }
-

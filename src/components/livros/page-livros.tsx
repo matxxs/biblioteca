@@ -275,7 +275,7 @@ export default function PageLivros() {
                   ? "Editar Livro"
                   : "Novo Livro"
             }
-            // size={"xl"}
+            size={editingLivro ? "xl" : "sm"}
           >
             {viewingLivro ? (
               <div className="space-y-4 text-sm">

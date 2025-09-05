@@ -216,9 +216,7 @@ router.post('/:id/devolver', async (req, res) => {
       .query('UPDATE Emprestimos SET DataDevolucaoReal = GETDATE() WHERE EmprestimoID = @emprestimoID');
 
     // Atualizar status do exemplar
-    await transaction.request()
-      .input('exemplarID', sql.Int, emprestimo.ExemplarID)
-      .query('UPDATE Exemplares SET StatusExemplar = \'Disponível\' WHERE ExemplarID = @exemplarID');
+
 
     await transaction.commit();
     res.json({ message: 'Livro devolvido com sucesso' });

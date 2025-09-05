@@ -47,6 +47,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import EmprestimosPage from "@/app/emprestimos/page";
 
 export function PageEmprestimos() {
   const [emprestimos, setEmprestimos] = useState<Emprestimo[]>([]);
@@ -110,84 +111,23 @@ export function PageEmprestimos() {
     } catch (error) {
       console.error("Erro ao carregar empréstimos:", error);
       // Dados mockados para demonstração
-      setEmprestimos([
-        {
-          emprestimoID: 1,
-          exemplarID: 1,
-          membroID: 1,
-          dataEmprestimo: "2024-01-10T10:00:00Z",
-          dataDevolucaoPrevista: "2024-01-24",
-          dataDevolucaoReal: undefined,
-          exemplar: {
-            exemplarID: 1,
-            livroID: 1,
-            codigoLocalizacao: "SEC-A, PRAT-3",
-            statusExemplar: "Emprestado",
-            livro: {
-              livroID: 1,
-              titulo: "O Senhor dos Anéis",
-              editoraID: 1,
-              isbn: "9788533613379",
-              anoPublicacao: 1954,
-              edicao: "1ª Edição",
-              numeroPaginas: 1216,
-              sinopse:
-                "A história de Frodo e sua jornada para destruir o Um Anel.",
-            },
-          },
-          membro: {
-            membroID: 1,
-            nome: "João",
-            sobrenome: "Silva",
-            dataNascimento: "1990-05-15",
-            endereco: "Rua das Flores, 123",
-            telefone: "(11) 99999-9999",
-            email: "joao.silva@email.com",
-            dataCadastro: "2023-01-15T10:00:00Z",
-            statusMembro: "Ativo",
-          },
-        },
-        {
-          emprestimoID: 2,
-          exemplarID: 2,
-          membroID: 2,
-          dataEmprestimo: "2024-01-05T14:30:00Z",
-          dataDevolucaoPrevista: "2024-01-19",
-          dataDevolucaoReal: "2024-01-18T16:00:00Z",
-          exemplar: {
-            exemplarID: 2,
-            livroID: 2,
-            codigoLocalizacao: "SEC-B, PRAT-1",
-            statusExemplar: "Disponível",
-            livro: {
-              livroID: 2,
-              titulo: "Harry Potter e a Pedra Filosofal",
-              editoraID: 2,
-              isbn: "9788532511010",
-              anoPublicacao: 1997,
-              edicao: "1ª Edição",
-              numeroPaginas: 264,
-              sinopse:
-                "A história de um jovem bruxo e sua jornada em Hogwarts.",
-            },
-          },
-          membro: {
-            membroID: 2,
-            nome: "Maria",
-            sobrenome: "Santos",
-            dataNascimento: "1985-08-22",
-            endereco: "Av. Paulista, 456",
-            telefone: "(11) 88888-8888",
-            email: "maria.santos@email.com",
-            dataCadastro: "2023-02-20T14:30:00Z",
-            statusMembro: "Ativo",
-          },
-        },
-      ]);
+      setEmprestimos([]);
     } finally {
       setLoading(false);
     }
   };
+
+
+  const handleDevolucao = async (emprestimo: Emprestimo) => {
+    try {
+      await emprestimoService.devolver(emprestimo.emprestimoID);
+      await loadEmprestimos();
+    } catch (error) {
+      console.error("Erro ao devolver empréstimo:", error);
+    }
+  };
+
+
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return "-";
@@ -393,7 +333,9 @@ export function PageEmprestimos() {
                               </AlertDialogHeader>
                               <AlertDialogFooter>
                                 <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                <AlertDialogAction>
+                                <AlertDialogAction
+                                  onClick={() => handleDevolucao(emprestimo)}
+                                >
                                   Sim, devolver
                                 </AlertDialogAction>
                               </AlertDialogFooter>
