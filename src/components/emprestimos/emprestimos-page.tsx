@@ -47,7 +47,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import EmprestimosPage from "@/app/emprestimos/page";
 
 export function PageEmprestimos() {
   const [emprestimos, setEmprestimos] = useState<Emprestimo[]>([]);

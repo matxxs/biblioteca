@@ -1,42 +1,49 @@
-// import { Book, ChartArea, FileChartColumn, House, Users } from "lucide-react";
-import { Book, ChartArea, FileChartColumn, HandCoins, House, NotebookPen, Users } from "lucide-react";
+import {
+  Book,
+  ChartArea,
+  FileChartColumn,
+  HandCoins,
+  House,
+  NotebookPen,
+  Users,
+} from "lucide-react";
 
 export const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "/",
+      url: "/Dashboard",
       icon: House,
     },
     {
       title: "Livros",
-      url: "/livros",
+      url: "/dashboard/livros",
       icon: Book,
     },
     {
       title: "Membros",
-      url: "/membros",
+      url: "/dashboard/membros",
       icon: Users,
     },
     {
       title: "Empréstimos",
-      url: "/emprestimos",
+      url: "/dashboard/emprestimos",
       icon: FileChartColumn,
     },
     {
       title: "Relatórios",
-      url: "/relatorios",
+      url: "/dashboard/relatorios",
       icon: ChartArea,
     },
     {
       title: "Gestão de Multas",
-      url: "/gestao-de-multas",
-      icon: HandCoins
+      url: "/dashboard/gestao-de-multas",
+      icon: HandCoins,
     },
-        {
+    {
       title: "Gestão de Reservas",
-      url: "/gestao-de-reservas",
-      icon: NotebookPen
-    }
+      url: "/dashboard/gestao-de-reservas",
+      icon: NotebookPen,
+    },
   ],
 };
